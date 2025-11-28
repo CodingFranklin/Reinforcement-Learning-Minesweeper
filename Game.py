@@ -8,8 +8,9 @@ class Game:
         pygame.display.set_caption(TITLE)
         self.clock = pygame.time.Clock()
 
-    def new(self):
-        pass
+    def reset(self):
+        self.board = Board()
+        self.board.display_board()
 
     def run(self):
         self.playing = True
@@ -20,7 +21,8 @@ class Game:
 
     def draw(self):
         self.screen.fill(BGCOLOR)
-        pygame.display.flip
+        self.board.draw(self.screen)
+        pygame.display.flip()
 
     def events(self):
         for event in pygame.event.get():
@@ -31,5 +33,5 @@ class Game:
 
 game = Game()
 while True:
-    game.new()
+    game.reset()
     game.run()
