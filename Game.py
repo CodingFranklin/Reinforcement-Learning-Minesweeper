@@ -30,6 +30,35 @@ class Game:
                 pygame.quit()
                 quit(0)
 
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mx, my = pygame.mouse.get_pos()
+                mx //= TILESIZE
+                my //= TILESIZE
+                target_tile = self.board.board_list[mx][my]
+
+                # if left mouse button down
+                if event.button == 1:
+                    if not target_tile.flagged:
+                        if not self.board.dig(mx, my):
+                            # Game Over
+                            for row in self.board.board_list:
+                                for tile in row:
+                                    if tile.flagged and tile.type != "X":
+                                        tile.flagged = False
+                                        tile.image = tile_not_mine
+                                        tile.revealed = True
+                                    elif tile.type == "X":
+                                        tile.revealed = True
+                            self.playing = False
+
+                # if right mouse button down
+                if event.button == 3:
+                    if not target_tile.revealed:
+                        target_tile.flagged = not target_tile.flagged
+
+
+
+
 
 game = Game()
 while True:
