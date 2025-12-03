@@ -18,6 +18,15 @@ class Game:
             self.clock.tick(FPS)
             self.events()
             self.draw()
+        else:
+            self.end_screen()
+
+    def check_win(self):
+        for row in self.board.board_list:
+            for tile in row:
+                if tile.type != "X" and not tile.revealed:
+                    return False
+        return True
 
     def draw(self):
         self.screen.fill(BGCOLOR)
@@ -55,6 +64,24 @@ class Game:
                 if event.button == 3:
                     if not target_tile.revealed:
                         target_tile.flagged = not target_tile.flagged
+                
+                if self.check_win():
+                    self.win = True
+                    self.playing = False
+                    for row in self.board.board_list:
+                        for tile in row:
+                            if not tile.revealed:
+                                tile.flagged = True
+
+    def end_screen(self):
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    quit(0)
+
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    return
 
 
 

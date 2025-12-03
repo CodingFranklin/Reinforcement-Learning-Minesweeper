@@ -15,6 +15,7 @@ class Tile:
         self.type = type
         self.revealed = revealed
         self.flagged = flagged
+        self.value = 0
 
     def __repr__(self):
         return self.type
@@ -57,6 +58,7 @@ class Board:
                     if clue_number > 0:
                         self.board_list[x][y].image = tile_numbers[clue_number-1]
                         self.board_list[x][y].type = "C"
+                        self.value = 0
 
     
 
