@@ -24,7 +24,7 @@ class DQN(nn.Module):
         return self.net(x)
 
 # ===== Hyperparameters =====
-EPISODES = 2000
+EPISODES = 500
 MAX_STEPS = 400
 GAMMA = 0.99
 LR = 1e-4
@@ -33,6 +33,11 @@ REPLAY_SIZE = 50000
 EPS_START = 1.0
 EPS_END = 0.05
 EPS_DECAY = 0.999
+
+
+dqn_rewards = []
+episodes_list = []    
+
 
 # ===== Setup =====
 env = MinesweeperEnv()
@@ -65,10 +70,10 @@ def replay_train_step():
 
     states, actions, rewards, next_states, dones = zip(*batch)
 
-    states = torch.tensor(states, dtype=torch.float32, device=device)
-    actions = torch.tensor(actions, dtype=torch.int64, device=device)
-    rewards = torch.tensor(rewards, dtype=torch.float32, device=device)
-    next_states = torch.tensor(next_states, dtype=torch.float32, device=device)
+    states = torch.tensor(np.array(states), dtype=torch.float32, device=device)
+    actions = torch.tensor(np.array(actions), dtype=torch.int64, device=device)
+    rewards = torch.tensor(np.array(rewards), dtype=torch.float32, device=device)
+    next_states = torch.tensor(np.array(next_states), dtype=torch.float32, device=device)
     dones = torch.tensor(dones, dtype=torch.bool, device=device)
 
     q_values = policy_net(states).gather(1, actions.unsqueeze(1)).squeeze(1)
@@ -110,5 +115,12 @@ for episode in range(EPISODES):
 
     if episode % 20 == 0:
         print(f"Ep {episode} | Reward: {total_reward:.2f} | eps={eps:.3f}")
+        dqn_rewards.append(total_reward)
+        episodes_list.append(episode)
 
 print("Training finished.")
+
+
+import json
+with open("dqn_rewards.json", "w") as f:
+    json.dump({"episodes": episodes_list, "rewards": dqn_rewards}, f)

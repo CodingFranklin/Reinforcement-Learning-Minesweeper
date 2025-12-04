@@ -1,11 +1,13 @@
 from Env_Minesweeper import MinesweeperEnv
+from Settings import ROWS, COLS
 import numpy as np
 import random
 
 env = MinesweeperEnv()
 
-NUM_EPISODES = 200      # smaller while testing
-MAX_STEPS = 400         # safety cap per episode
+NUM_EPISODES = 500      
+MAX_STEPS = 400    
+random_rewards = []     
 
 for episode in range(NUM_EPISODES):
     obs = env.reset()
@@ -22,3 +24,9 @@ for episode in range(NUM_EPISODES):
 
     if episode % 10 == 0:
         print(f"Episode {episode}: steps={steps}, total_reward={total_reward:.2f}")
+        random_rewards.append(total_reward)
+
+
+import json
+with open("random_rewards.json", "w") as f:
+    json.dump(random_rewards, f)
