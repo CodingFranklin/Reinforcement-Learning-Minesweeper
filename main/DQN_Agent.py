@@ -24,7 +24,7 @@ class DQN(nn.Module):
         return self.net(x)
 
 # ===== Hyperparameters =====
-EPISODES = 500
+EPISODES = 3000
 MAX_STEPS = 400
 GAMMA = 0.99
 LR = 1e-4
@@ -117,10 +117,12 @@ for episode in range(EPISODES):
         print(f"Ep {episode} | Reward: {total_reward:.2f} | eps={eps:.3f}")
         dqn_rewards.append(total_reward)
         episodes_list.append(episode)
+    
+    
 
 print("Training finished.")
 
 
 import json
-with open("dqn_rewards.json", "w") as f:
+with open("../dqn_rewards.json", "w") as f:
     json.dump({"episodes": episodes_list, "rewards": dqn_rewards}, f)

@@ -3,24 +3,26 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # ===== Load DQN data =====
-with open("dqn_rewards.json", "r") as f:
+with open("../dqn_rewards.json", "r") as f:
     dqn_data = json.load(f)
 
 dqn_episodes = dqn_data["episodes"]
 dqn_rewards = dqn_data["rewards"]
 
 # ===== Load Random Agent data =====
-with open("random_rewards.json", "r") as f:
+with open("../random_rewards.json", "r") as f:
     random_rewards = json.load(f)
 
-random_episodes = list(range(len(random_rewards)))
+random_episodes = [i * 20 for i in range(len(random_rewards))]
 
-# ===== Optional smoothing (moving average) =====
-def smooth(x, w=50):
+# ===== Optional smoothing =====
+def smooth(x, w=10):
+    if len(x) < w:
+        return x
     return np.convolve(x, np.ones(w)/w, mode='valid')
 
-dqn_smooth = smooth(dqn_rewards, 50)
-rand_smooth = smooth(random_rewards, 50)
+dqn_smooth = smooth(dqn_rewards, 10)
+rand_smooth = smooth(random_rewards, 3)
 
 # ===== Plot =====
 plt.figure(figsize=(12,6))
