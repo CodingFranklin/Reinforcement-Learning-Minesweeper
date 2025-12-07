@@ -63,22 +63,40 @@ class MinesweeperEnv:
 
         # If we re-click a revealed tile, small penalty to discourage it
         if tile.revealed:
-            reward = -0.1
+            reward = -1.0
             return self._get_observation(), reward, self.done, {}
+
+        # Calculate the block got digged before the step
+        prev_revealed = 0
+        for row in self.board.board_list:
+            for t in row:
+                if t.revealed:
+                    prev_revealed += 1
 
         # Dig the tile (same logic Board.dig uses for human play) :contentReference[oaicite:3]{index=3}
         alive = self.board.dig(x, y)
+
+        # Calculate the block got digged by this step
+        new_revealed = 0
+        for row in self.board.board_list:
+            for t in row:
+                if t.revealed:
+                    new_revealed += 1
+
+        # the amount this time digged and keep alive (click the safe block)
+        newly_opened = max(0, new_revealed - prev_revealed)
 
         if not alive:
             # Hit a mine
             reward = -10.0
             self.done = True
         elif self._check_win():
-            reward = 10.0
+            reward = float(newly_opened) + 10.0
             self.done = True
         else:
             # Survived; give small reward for revealing safe stuff
-            reward = 1.0
+                # new: add reward based on the amout newly opened
+            reward = float(newly_opened)
 
         obs = self._get_observation()
         return obs, reward, self.done, {}
