@@ -56,9 +56,10 @@ class Board:
                 if self.board_list[x][y].type != "X":
                     clue_number = self.check_neighbors(x, y)
                     if clue_number > 0:
-                        self.board_list[x][y].image = tile_numbers[clue_number-1]
-                        self.board_list[x][y].type = "C"
-                        self.value = 0
+                        tile = self.board_list[x][y]
+                        tile.image = tile_numbers[clue_number - 1]
+                        tile.type = "C"
+                        tile.value = clue_number
 
     
 
