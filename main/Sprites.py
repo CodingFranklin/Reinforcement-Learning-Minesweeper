@@ -35,20 +35,26 @@ class Board:
         # board list: a matrix contains all the Tiles which represented by their types
         self.board_list = [[Tile(col, row, tile_empty, ".") for row in range(ROWS)] for col in range(COLS)]
         self.dug = []
-        self.place_mines()
-        self.place_clues()
+        self.mines_placed = False
 
-    def place_mines(self):
-        for _ in range(AMOUNT_OF_MINES):
-            while True:
-                x = random.randint(0, ROWS-1)
-                y = random.randint(0, COLS-1)
+    def place_mines(self, safe_x = None, safe_y = None):
+        def in_safe_zone(x, y):
+            if safe_x is None or safe_y is None:
+                return False
+            else:
+                return abs(x - safe_x) <= 1 and abs(y - safe_y) <= 1
 
-                # Place a mine if it is not a mine
-                if (self.board_list[x][y].type == "."):
-                    self.board_list[x][y].image = tile_mine
-                    self.board_list[x][y].type = "X" 
-                    break
+        placed = 0
+        while(placed < AMOUNT_OF_MINES):
+            x = random.randint(0, ROWS-1)
+            y = random.randint(0, COLS-1)
+
+            if self.board_list[x][y].type == "." and not in_safe_zone(x, y):
+                self.board_list[x][y].image = tile_mine
+                self.board_list[x][y].type = "X"
+                placed += 1
+        
+        self.mines_placed = True
 
     def place_clues(self):
         for x in range(ROWS):
@@ -81,6 +87,10 @@ class Board:
         return total_mines
 
     def dig(self, x, y):
+        if not self.mines_placed:
+            self.place_mines(x, y)
+            self.place_clues()
+
         self.dug.append((x, y))
 
         # Dig out a bomb
