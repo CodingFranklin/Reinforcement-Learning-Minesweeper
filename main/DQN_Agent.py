@@ -25,7 +25,7 @@ class DQN(nn.Module):
 
 # ===== Hyperparameters =====
 EPISODES = 3000
-MAX_STEPS = 400
+MAX_STEPS = 100
 GAMMA = 0.99
 LR = 1e-4
 BATCH_SIZE = 64
@@ -53,13 +53,29 @@ replay = deque(maxlen=REPLAY_SIZE)
 
 eps = EPS_START
 
+def get_valid_actions(state):
+    # state: shape (ROWS, COLS)
+    mask = (state.reshape(ROWS, COLS) == -1)
+    coords = np.argwhere(mask)
+    if len(coords) == 0:
+        return [i for i in range(ROWS * COLS)]
+    return [r * COLS + c for (r, c) in coords]
+
 def select_action(state):
     global eps
+    valid_actions = get_valid_actions(state)
+
     if random.random() < eps:
-        return random.randint(0, ROWS * COLS - 1)
+        return random.choice(valid_actions)
+
     state_t = torch.tensor(state, dtype=torch.float32, device=device).unsqueeze(0)
     with torch.no_grad():
-        q_values = policy_net(state_t)
+        q_values = policy_net(state_t).view(-1)  # (ROWS*COLS,)
+
+    mask = torch.ones(ROWS * COLS, dtype=torch.bool, device=device)
+    mask[valid_actions] = False
+    q_values[mask] = -1e9
+
     return int(torch.argmax(q_values))
 
 def replay_train_step():

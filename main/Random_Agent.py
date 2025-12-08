@@ -6,7 +6,7 @@ import random
 env = MinesweeperEnv()
 
 NUM_EPISODES = 3000     
-MAX_STEPS = 400    
+MAX_STEPS = 100
 random_rewards = []     
 
 for episode in range(NUM_EPISODES):
